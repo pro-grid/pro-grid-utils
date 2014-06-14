@@ -30,7 +30,7 @@ ball.prototype.move = function (coords) {
   var self = this;
   window.setTimeout(function () {
     self.element().click();
-  }, 700);
+  }, 200);
 };
 
 // Engine that drives the ball
@@ -39,7 +39,7 @@ var ballEngine = function (ballInstance) {
   var self = this;
   this.interval = window.setInterval(function () {
     self.next();
-  }, 1400);
+  }, 400);
 };
 
 ballEngine.prototype.next = function (ballInstance) {
@@ -54,15 +54,17 @@ ballEngine.prototype.next = function (ballInstance) {
     return coord + (Math.cos(toRadians(self.ball.direction)) * self.ball.speed);
   };
   var direction = function () {
-    var edge = genCoord(self.ball.col) > grid.w || genCoord(self.ball.col) < 0;
-    var collision = !!gridEl(self.ball.row, genCoord(self.ball.col)).style.backgroundColor; 
-    
-    if(edge || collision) {
+    var edge = genCoord(self.ball.col) < grid.w && genCoord(self.ball.col) >= 0;
+    console.log('edge:', edge);
+    var collision = edge && !!gridEl(self.ball.row, genCoord(self.ball.col)).style.backgroundColor; 
+    console.log('edge:', edge, 'collision', collision); 
+    if(collision || !edge) {
       return 180 - self.ball.direction;
     } else {
       return self.ball.direction;
     }
   };
   this.ball.direction = direction();
+  console.log('direction', this.ball.direction);
   this.ball.move({ row: this.ball.row, col: genCoord(this.ball.col) });
 }; 
