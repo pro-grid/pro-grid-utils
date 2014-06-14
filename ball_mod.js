@@ -2,8 +2,8 @@ var jq = document.createElement('script');
 jq.src = "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js";
 document.getElementsByTagName('head')[0].appendChild(jq);
 
-var gridEl = function (row, col) {
-  return $('.col_' + row + '_' + col);
+var gridEl = function (x, y) {
+  return $('.col_' + x + '_' + y);
 };
 
 function toRadians (angle) {
@@ -13,20 +13,20 @@ function toRadians (angle) {
 // Ball instance constructor
 var ball = function (config) {
   config = config || {};
-  this.row = config.row || 0;
-  this.col = config.col || 0;
+  this.x = config.x || 0;
+  this.y = config.y || 0;
   this.speed = config.speed || 1; // in "pixels"
   this.direction = config.direction || 0; // in degrees
   this.element = function () {
-    return gridEl(this.row, this.col);
+    return gridEl(this.y, this.x);
   };
   this.element().click();
 };
 
 ball.prototype.move = function (coords) {
   this.element().click();
-  this.row = coords.row;
-  this.col = coords.col;
+  this.x = coords.x;
+  this.y = coords.y;
   var self = this;
   window.setTimeout(function () {
     self.element().click();
@@ -54,9 +54,9 @@ ballEngine.prototype.next = function (ballInstance) {
     return coord + (Math.cos(toRadians(self.ball.direction)) * self.ball.speed);
   };
   var direction = function () {
-    var edge = genCoord(self.ball.col) < grid.w && genCoord(self.ball.col) >= 0;
+    var edge = genCoord(self.ball.x) < grid.w && genCoord(self.ball.x) >= 0;
     console.log('edge:', edge);
-    var collision = edge && !!gridEl(self.ball.row, genCoord(self.ball.col)).style.backgroundColor; 
+    var collision = edge && !!gridEl(self.ball.y, genCoord(self.ball.x)).style.backgroundColor; 
     console.log('edge:', edge, 'collision', collision); 
     if(collision || !edge) {
       return 180 - self.ball.direction;
@@ -66,5 +66,5 @@ ballEngine.prototype.next = function (ballInstance) {
   };
   this.ball.direction = direction();
   console.log('direction', this.ball.direction);
-  this.ball.move({ row: this.ball.row, col: genCoord(this.ball.col) });
+  this.ball.move({ y: this.ball.y, x: genCoord(this.ball.x) });
 }; 
