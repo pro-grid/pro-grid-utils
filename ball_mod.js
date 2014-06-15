@@ -46,9 +46,7 @@ var ball = function (config) {
 
 ball.prototype.move = function (coords) {
   var prevColor = this.element().style.backgroundColor;
-  if(prevColor !== '') {
-    this.element().click();
-  }
+  this.element().click();
   this.x = coords.x;
   this.y = coords.y;
   var self = this;
@@ -115,13 +113,16 @@ ballEngine.prototype.next = function (ballInstance) {
         var cti = collisionTests.map(function (direction) {
           return checkDirection(direction);
         });
-        cti[cti.length] = cti[0];
+        console.log(cti);
         var directionIndex = collisionTests.indexOf(self.ball.direction);
-        var reflect = cti[directionIndex] && (!cti[directionIndex+1] && !cti[directionIndex-1]);
-        if(reflect || (cti[directionIndex+1] && cti[directionIndex-1])) {
+        var dHi = directionIndex + 1 < collisionTests.length ? directionIndex + 1 : 0;
+        var dLo = directionIndex - 1;
+        console.log('dLo', dLo);
+        var reflect = cti[directionIndex] && (!cti[dHi] && !cti[dLo]);
+        if(reflect || (cti[dHi] && cti[dLo])) {
           return 180 + self.ball.direction;
         } else {
-          if(cti[directionIndex+1] || cti[directionIndex-1]) {
+          if(cti[dHi] || cti[dLo]) {
           var vertical = 360 - self.ball.direction;
           var horizontal = self.ball.direction > 180 ? 540 - self.ball.direction : 180 - self.ball.direction;
           var tests = {
@@ -130,7 +131,7 @@ ballEngine.prototype.next = function (ballInstance) {
             "0": horizontal,
             "4": horizontal
           };
-          var wall = cti[directionIndex+1] ? directionIndex+1 : directionIndex-1;
+          var wall = cti[dHi] ? dHi : dLo;
           return tests[wall];
           } else {
             return self.ball.direction;
