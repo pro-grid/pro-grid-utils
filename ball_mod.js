@@ -10,6 +10,27 @@ function toRadians (angle) {
   return angle * (Math.PI / 180);
 }
 
+function range(start, end, step) {
+  start = +start || 0;
+  step = typeof step == 'number' ? step : (+step || 1);
+
+  if (end === null) {
+    end = start;
+    start = 0;
+  }
+  // use `Array(length)` so engines like Chakra and V8 avoid slower modes
+  // http://youtu.be/XAqIpGU8ZZk#t=17m25s
+  var index = -1,
+  length = Math.max(0, Math.ceil((end - start) / (step || 1))),
+  result = Array(length);
+
+  while (++index < length) {
+    result[index] = start;
+    start += step;
+  }
+  return result;
+}
+
 // Ball instance constructor
 var ball = function (config) {
   config = config || {};
@@ -55,13 +76,13 @@ ballEngine.prototype.next = function (ballInstance) {
   };
   var nextCoord = {
     x: function (x, direction) {
-      x = x || self.ball.x;
-      direction = direction || self.ball.direction;
+      x = typeof x !== 'undefined' ? x :  self.ball.x;
+      direction = typeof direction !== 'undefined' ? direction : self.ball.direction;
       return x + Math.round(Math.cos(toRadians(direction)) * self.ball.speed);
     },
     y: function (y, direction) {
-      y = y || self.ball.y;
-      direction = direction || self.ball.direction;
+      y = typeof y !== 'undefined' ? y : self.ball.y;
+      direction = typeof direction !== 'undefined' ? direction : self.ball.direction;
       return y + Math.round(Math.sin(toRadians(direction)) * self.ball.speed);
     }
   };
@@ -77,22 +98,35 @@ ballEngine.prototype.next = function (ballInstance) {
   var checkDirection = function (direction) {
     return collide(nextCoord.x(self.ball.x, direction), nextCoord.y(self.ball.y, direction));
   };
-  // top right bottom left
-  /* var collisionTests = [360, 0, 90, 180];
-  collisionTests = collisionTests.map(function (direction) {
-    return checkDirection(direction);
-  });*/
 
   console.log('check next square', checkDirection(self.ball.direction));
+  var collisionTests = range(0, 360, 45);
   var newDirection = function () {
+    self.ball.direction %= 360;
     if(self.ball.direction % 90 === 0) {
       if(checkDirection(self.ball.direction)) {
-        return 180-self.ball.direction;
+        return 180 - self.ball.direction;
       } else {
         return self.ball.direction;
       }
     } else {
-      return self.ball.direction;
+      if(self.ball.direction % 45 === 0){
+        var collisionTestsInstance = collisionTests.map(function (direction) {
+          console.log('mapping');
+          return checkDirection(direction);
+        });
+        var directionIndex = collisionTests.indexOf(self.ball.direction);
+        console.log('directionIndex', directionIndex, collisionTests, collisionTestsInstance);
+        var goBackwards = collisionTestsInstance[directionIndex] && (!collisionTestsInstance[directionIndex+1] && !collisionTestsInstance[directionIndex-1]);
+        if(goBackwards || (collisionTestsInstance[directionIndex+1] && collisionTestsInstance[directionIndex-1])) {
+          console.log('okay switch');
+          return 180 + self.ball.direction;
+        } else {
+          return self.ball.direction;
+        }
+      } else {
+        return self.ball.direction;
+      }
     }
   };
   this.ball.direction = newDirection();
