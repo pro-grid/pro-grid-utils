@@ -43,6 +43,7 @@ var ball = function (config) {
   };
   this.element().click();
   this.color = this.element().style.backgroundColor;
+  this.delay = config.delay || 150;
 };
 
 ball.prototype.move = function (coords) {
@@ -56,7 +57,7 @@ ball.prototype.move = function (coords) {
   if(!this.element().style.backgroundColor && this.element().style.backgroundColor !== this.color) {
     window.setTimeout(function () {
       self.element().click();
-    }, 700);
+    }, this.delay);
   }
 };
 
@@ -66,7 +67,7 @@ var ballEngine = function (ballInstance) {
   var self = this;
   this.interval = window.setInterval(function () {
     self.next();
-  }, 1400);
+  }, this.ball.delay*2);
 };
 
 
