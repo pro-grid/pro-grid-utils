@@ -113,14 +113,13 @@ ballEngine.prototype.next = function (ballInstance) {
       }
     } else {
       if(self.ball.direction % 45 === 0){
-        var collisionTestsInstance = collisionTests.map(function (direction) {
+        var cti = collisionTests.map(function (direction) {
           console.log('mapping');
           return checkDirection(direction);
         });
         var directionIndex = collisionTests.indexOf(self.ball.direction);
-        console.log('directionIndex', directionIndex, collisionTests, collisionTestsInstance);
-        var goBackwards = collisionTestsInstance[directionIndex] && (!collisionTestsInstance[directionIndex+1] && !collisionTestsInstance[directionIndex-1]);
-        if(goBackwards || (collisionTestsInstance[directionIndex+1] && collisionTestsInstance[directionIndex-1])) {
+        var goBackwards = cti[directionIndex] && (!cti[directionIndex+1] && !cti[directionIndex-1]);
+        if(goBackwards || (cti[directionIndex+1] &&cti[directionIndex-1])) {
           console.log('okay switch');
           return 180 + self.ball.direction;
         } else {
