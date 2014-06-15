@@ -115,12 +115,26 @@ ballEngine.prototype.next = function (ballInstance) {
         var cti = collisionTests.map(function (direction) {
           return checkDirection(direction);
         });
+        cti[cti.length] = cti[0];
         var directionIndex = collisionTests.indexOf(self.ball.direction);
         var reflect = cti[directionIndex] && (!cti[directionIndex+1] && !cti[directionIndex-1]);
         if(reflect || (cti[directionIndex+1] && cti[directionIndex-1])) {
           return 180 + self.ball.direction;
         } else {
-          return self.ball.direction;
+          if(cti[directionIndex+1] || cti[directionIndex-1]) {
+          var vertical = 360 - self.ball.direction;
+          var horizontal = self.ball.direction > 180 ? 540 - self.ball.direction : 180 - self.ball.direction;
+          var tests = {
+            "2": vertical,
+            "6": vertical,
+            "0": horizontal,
+            "4": horizontal
+          };
+          var wall = cti[directionIndex+1] ? directionIndex+1 : directionIndex-1;
+          return tests[wall];
+          } else {
+            return self.ball.direction;
+          }
         }
       } else {
         return self.ball.direction;
