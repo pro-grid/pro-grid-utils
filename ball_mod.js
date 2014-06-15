@@ -101,7 +101,6 @@ ballEngine.prototype.next = function (ballInstance) {
     return collide(nextCoord.x(self.ball.x, direction), nextCoord.y(self.ball.y, direction));
   };
 
-  console.log('check next square', checkDirection(self.ball.direction));
   var collisionTests = range(0, 360, 45);
   var newDirection = function () {
     self.ball.direction %= 360;
@@ -114,13 +113,11 @@ ballEngine.prototype.next = function (ballInstance) {
     } else {
       if(self.ball.direction % 45 === 0){
         var cti = collisionTests.map(function (direction) {
-          console.log('mapping');
           return checkDirection(direction);
         });
         var directionIndex = collisionTests.indexOf(self.ball.direction);
-        var goBackwards = cti[directionIndex] && (!cti[directionIndex+1] && !cti[directionIndex-1]);
-        if(goBackwards || (cti[directionIndex+1] &&cti[directionIndex-1])) {
-          console.log('okay switch');
+        var reflect = cti[directionIndex] && (!cti[directionIndex+1] && !cti[directionIndex-1]);
+        if(reflect || (cti[directionIndex+1] && cti[directionIndex-1])) {
           return 180 + self.ball.direction;
         } else {
           return self.ball.direction;
