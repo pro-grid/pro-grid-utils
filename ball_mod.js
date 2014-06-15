@@ -3,7 +3,7 @@ jq.src = "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js";
 document.getElementsByTagName('head')[0].appendChild(jq);
 
 var gridEl = function (x, y) {
-  return $('.col_' + x + '_' + y);
+  return $('.col_' + y + '_' + x);
 };
 
 function toRadians (angle) {
@@ -18,7 +18,7 @@ var ball = function (config) {
   this.speed = config.speed || 1; // in "pixels"
   this.direction = config.direction || 0; // in degrees
   this.element = function () {
-    return gridEl(this.y, this.x);
+    return gridEl(this.x, this.y);
   };
   this.element().click();
 };
@@ -30,7 +30,7 @@ ball.prototype.move = function (coords) {
   var self = this;
   window.setTimeout(function () {
     self.element().click();
-  }, 200);
+  }, 700);
 };
 
 // Engine that drives the ball
@@ -39,8 +39,9 @@ var ballEngine = function (ballInstance) {
   var self = this;
   this.interval = window.setInterval(function () {
     self.next();
-  }, 400);
+  }, 1400);
 };
+
 
 ballEngine.prototype.next = function (ballInstance) {
   var self = this;
@@ -49,22 +50,49 @@ ballEngine.prototype.next = function (ballInstance) {
     w: 32,
     h: 32
   };
-  var genCoord = function (coord) {
-    console.log(self.ball.direction, self.ball.speed, (Math.cos(toRadians(self.ball.direction)) * self.ball.speed));
-    return coord + (Math.cos(toRadians(self.ball.direction)) * self.ball.speed);
+  var nextCoord = {
+    x: function (x, direction) {
+      x = x || self.ball.x;
+      direction = direction || self.ball.direction;
+      return x + Math.round(Math.cos(toRadians(direction)) * self.ball.speed);
+    },
+    y: function (y, direction) {
+      y = y || self.ball.y;
+      direction = direction || self.ball.direction;
+      return y + Math.round(Math.sin(toRadians(direction)) * self.ball.speed);
+    }
   };
-  var direction = function () {
-    var edge = genCoord(self.ball.x) < grid.w && genCoord(self.ball.x) >= 0;
-    console.log('edge:', edge);
-    var collision = edge && !!gridEl(self.ball.y, genCoord(self.ball.x)).style.backgroundColor; 
-    console.log('edge:', edge, 'collision', collision); 
-    if(collision || !edge) {
-      return 180 - self.ball.direction;
+  var collide = function (x, y) { 
+    console.log('inside collide',x,y);
+    var likelyEl = gridEl(x, y);
+    console.log(likelyEl);
+    if(likelyEl === null) {
+      return true;
+    } else {
+      return likelyEl.style.backgroundColor !== '';
+    }
+  };
+  var checkDirection = function (direction) {
+    return collide(nextCoord.x(self.ball.x, direction), nextCoord.y(self.ball.y, direction));
+  };
+  // top right bottom left
+  /* var collisionTests = [360, 0, 90, 180];
+  collisionTests = collisionTests.map(function (direction) {
+    return checkDirection(direction);
+  });*/
+
+  console.log('check next square', checkDirection(self.ball.direction));
+  var newDirection = function () {
+    if(self.ball.direction % 90 === 0) {
+      if(checkDirection(self.ball.direction)) {
+        return 180-self.ball.direction;
+      } else {
+        return self.ball.direction;
+      }
     } else {
       return self.ball.direction;
     }
   };
-  this.ball.direction = direction();
-  console.log('direction', this.ball.direction);
-  this.ball.move({ y: this.ball.y, x: genCoord(this.ball.x) });
+  this.ball.direction = newDirection();
+  this.ball.move({ y: nextCoord.y(), x: nextCoord.x() });
 }; 
