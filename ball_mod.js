@@ -24,13 +24,16 @@ var ball = function (config) {
 };
 
 ball.prototype.move = function (coords) {
+  var prevColor = this.element().style.backgroundColor;
   this.element().click();
   this.x = coords.x;
   this.y = coords.y;
   var self = this;
-  window.setTimeout(function () {
-    self.element().click();
-  }, 700);
+  if(this.element().style.backgroundColor !== prevColor) {
+    window.setTimeout(function () {
+      self.element().click();
+    }, 700);
+  }
 };
 
 // Engine that drives the ball
@@ -65,11 +68,10 @@ ballEngine.prototype.next = function (ballInstance) {
   var collide = function (x, y) { 
     console.log('inside collide',x,y);
     var likelyEl = gridEl(x, y);
-    console.log(likelyEl);
     if(likelyEl === null) {
       return true;
     } else {
-      return likelyEl.style.backgroundColor !== '';
+      return likelyEl.style.backgroundColor !== '' && likelyEl.style.backgroundColor !== self.ball.element().style.backgroundColor;
     }
   };
   var checkDirection = function (direction) {
