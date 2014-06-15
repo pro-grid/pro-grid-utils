@@ -73,7 +73,6 @@ var ballMod = (function () {
 
   bm.ballEngine.prototype.next = function (ballInstance) {
     var self = this;
-    console.log(this.ball);
     var grid = {
       w: 32,
       h: 32
@@ -91,9 +90,8 @@ var ballMod = (function () {
       }
     };
     var collide = function (x, y) { 
-      console.log('inside collide',x,y);
       var likelyEl = gridEl(x, y);
-      if(likelyEl === null) {
+      if(typeof likelyEl === 'undefined') {
         return true;
       } else {
         return likelyEl.style.backgroundColor !== '' && likelyEl.style.backgroundColor !== self.ball.element().style.backgroundColor;
@@ -117,11 +115,9 @@ var ballMod = (function () {
           var cti = collisionTests.map(function (direction) {
             return checkDirection(direction);
           });
-          console.log(cti);
           var directionIndex = collisionTests.indexOf(self.ball.direction);
           var dHi = directionIndex + 1 < collisionTests.length ? directionIndex + 1 : 0;
           var dLo = directionIndex - 1;
-          console.log('dLo', dLo);
           var reflect = cti[directionIndex] && (!cti[dHi] && !cti[dLo]);
           if(reflect || (cti[dHi] && cti[dLo])) {
             return 180 + self.ball.direction;
@@ -150,8 +146,8 @@ var ballMod = (function () {
     this.ball.move({ y: nextCoord.y(), x: nextCoord.x() });
   }; 
 
-  bm.init = function () {
-    var e = new bm.ballEngine(new bm.ball());
+  bm.init = function (config) {
+    var e = new bm.ballEngine(new bm.ball(config));
   };
 
   return bm;
