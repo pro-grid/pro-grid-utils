@@ -42,15 +42,18 @@ var ball = function (config) {
     return gridEl(this.x, this.y);
   };
   this.element().click();
+  this.color = this.element().style.backgroundColor;
 };
 
 ball.prototype.move = function (coords) {
   var prevColor = this.element().style.backgroundColor;
-  this.element().click();
+  if(this.element().style.backgroundColor) {
+    this.element().click();
+  }
   this.x = coords.x;
   this.y = coords.y;
   var self = this;
-  if(this.element().style.backgroundColor !== prevColor) {
+  if(!this.element().style.backgroundColor && this.element().style.backgroundColor !== this.color) {
     window.setTimeout(function () {
       self.element().click();
     }, 700);
