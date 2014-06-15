@@ -46,7 +46,9 @@ var ball = function (config) {
 
 ball.prototype.move = function (coords) {
   var prevColor = this.element().style.backgroundColor;
-  this.element().click();
+  if(prevColor !== '') {
+    this.element().click();
+  }
   this.x = coords.x;
   this.y = coords.y;
   var self = this;
