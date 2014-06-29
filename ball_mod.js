@@ -73,10 +73,6 @@ var ballMod = (function () {
 
   bm.ballEngine.prototype.next = function (ballInstance) {
     var self = this;
-    var grid = {
-      w: 32,
-      h: 32
-    };
     var nextCoord = {
       x: function (x, direction) {
         x = typeof x !== 'undefined' ? x :  self.ball.x;
