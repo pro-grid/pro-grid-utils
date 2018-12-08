@@ -7,7 +7,7 @@ Utils for progrid
 inject
 ```js
 var ballscript = document.createElement('script');
-ballscript.src = "https://rawgit.com/austinpray/pro-grid-utils/master/ball_mod.js";
+ballscript.src = "https://cdn.jsdelivr.net/gh/austinpray/pro-grid-utils/ball_mod.js";
 document.getElementsByTagName('head')[0].appendChild(ballscript);
 ```
 
